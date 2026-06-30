@@ -1,0 +1,25 @@
+# Build folders
+Debug/
+Release/
+
+# Object and dependency files
+*.o
+*.d
+*.su
+*.cyclo
+
+# Binaries
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+
+# STM32CubeIDE / Eclipse user files
+.settings/
+*.launch
+.metadata/
+
+# OS temporary files
+.DS_Store
+Thumbs.db
