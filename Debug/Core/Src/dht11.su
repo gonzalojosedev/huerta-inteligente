@@ -1,0 +1,5 @@
+../Core/Src/dht11.c:8:13:delay_us	16	static
+../Core/Src/dht11.c:17:13:DHT11_SetPinOutput	32	static
+../Core/Src/dht11.c:29:13:DHT11_SetPinInput	32	static
+../Core/Src/dht11.c:40:16:DHT11_WaitForPin	16	static
+../Core/Src/dht11.c:55:9:DHT11_Read	24	static

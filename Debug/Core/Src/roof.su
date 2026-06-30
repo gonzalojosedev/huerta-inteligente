@@ -1,0 +1,6 @@
+../Core/Src/roof.c:5:6:Roof_Init	8	static
+../Core/Src/roof.c:13:6:Roof_Open	8	static
+../Core/Src/roof.c:26:6:Roof_Close	8	static
+../Core/Src/roof.c:39:6:Roof_Stop	8	static
+../Core/Src/roof.c:47:11:Roof_GetState	4	static
+../Core/Src/roof.c:52:6:Roof_ResetManualStop	4	static
