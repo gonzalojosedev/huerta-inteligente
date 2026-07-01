@@ -27,6 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+#include <string.h>
 
 #include "lcd_i2c.h"
 #include "dht11.h"
@@ -76,6 +77,10 @@ uint8_t irrigationActive = 0;
 uint32_t irrigationStartTime = 0;
 const uint32_t IRRIGATION_DURATION_MS = 10000U;
 
+uint32_t lastTelemetrySend = 0;
+const uint32_t TELEMETRY_PERIOD_MS = 2000U;
+
+char telemetryLine[128];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -88,6 +93,10 @@ static void App_UpdateOutputs(void);
 static void App_UpdateLcd(void);
 
 static void App_UpdateRoof(void);
+
+static void App_SendTelemetry(void);
+
+static const char *RoofStateToString(RoofState);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -160,6 +169,7 @@ int main(void)
       App_UpdateRoof();
       App_UpdateOutputs();
       App_UpdateLcd();
+      App_SendTelemetry();
 
     /* USER CODE END WHILE */
 
@@ -416,6 +426,55 @@ static void App_UpdateRoof(void)
         default:
             Roof_Stop();
             break;
+    }
+}
+
+static void App_SendTelemetry(void)
+{
+    uint32_t now = HAL_GetTick();
+
+    if ((now - lastTelemetrySend) >= TELEMETRY_PERIOD_MS)
+    {
+        lastTelemetrySend = now;
+
+        snprintf(telemetryLine,
+                 sizeof(telemetryLine),
+                 "{\"temp\":%u,"
+                 "\"hum\":%u,"
+                 "\"soil\":%lu,"
+                 "\"irrigation\":%u,"
+                 "\"roof\":\"%s\"}\r\n",
+                 dhtData.temperature,
+                 dhtData.humidity,
+                 soilPercent,
+                 irrigationActive,
+                 RoofStateToString(Roof_GetState()));
+
+        HAL_UART_Transmit(&huart2,
+                          (uint8_t *)telemetryLine,
+                          strlen(telemetryLine),
+                          100U);
+    }
+}
+
+static const char *RoofStateToString(RoofState state)
+{
+    switch (state)
+    {
+        case ROOF_STOPPED:
+            return "STOPPED";
+
+        case ROOF_OPENING:
+            return "OPENING";
+
+        case ROOF_CLOSING:
+            return "CLOSING";
+
+        case ROOF_MANUAL_STOP:
+            return "MANUAL_STOP";
+
+        default:
+            return "UNKNOWN";
     }
 }
 /* USER CODE END 4 */
